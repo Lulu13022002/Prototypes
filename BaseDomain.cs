@@ -5,6 +5,18 @@ namespace CheckURI.Tools
 {
     public static class BaseDomain
     {
+        public static async Task<bool> IsValidWebRequest(this string uri)
+        {
+            try
+            {
+                using (HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Head, uri))
+                using (var response = await Downloader.client.SendAsync(req, HttpCompletionOption.ResponseHeadersRead))
+                {
+                    return response.IsSuccessStatusCode; //range code 200 -299
+                }
+            } catch { return false; }
+        }
+        
         public static async Task<string> GetBaseDomain(this Uri uri)
         {
             string host = uri.Host;
