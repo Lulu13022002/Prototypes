@@ -7,11 +7,10 @@ namespace CheckURI.Tools
 {
     public static class ImageCheck
     {
-        public static async Task<bool> IsValidImage(this Uri uri)
+        public static async Task<bool> IsValidImage(this Uri uri, string contentType = null)
         {
-            string uriT = uri.ToString();
-            if (uri.Scheme == "data" && uriT.Split(',', ';')[0] != "data:" &&
-                !uriT.Substring(5).Split(',', ';')[0].ToLower().StartsWith("image/")) return false;
+            if (contentType != null) return contentType.StartsWith("image/");
+            if (uri.Scheme == "data" && !uri.ToString().Split(':')[1].ToLower().StartsWith("image/")) return false;
 
             using (var response = await Downloader.client.GetAsync(uri))
             {
