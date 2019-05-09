@@ -49,9 +49,8 @@ namespace CheckURI.Tools
                 if (split.Length == 2) return host;
                 else
                 {
-                    string supposed = $"{split[split.Length - 2]}.{split[split.Length - 1]}";
-                    string[] exts = { "co.uk", "gouv.fr", "co.za", "co.in", "co.nz", "co.il", "co.zw" };
-                    if (Array.Exists(exts, x => supposed.Contains(x))) supposed = $"{split[split.Length - 3]}.{supposed}";
+                    string supposed = String.Format("{0}.{1}", split[split.Length - 2], split[split.Length - 1]);
+                    if (supposed.StartsWith("co.") || supposed.StartsWith("gouv.")) supposed = String.Format("{0}.{1}", split[split.Length - 3], supposed);
                     return supposed;
                 }
             }
