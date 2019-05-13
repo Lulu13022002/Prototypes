@@ -36,4 +36,29 @@ namespace CheckURI.Tools
             return false;
         }
     }
+    
+    public static bool CanRead(string path)
+    {
+        bool canAccess = false;
+
+        DirectorySecurity acl = new DirectoryInfo(path).GetAccessControl();
+        if (acl == null) return false;
+        AuthorizationRuleCollection rules = acl.GetAccessRules(true, true, typeof(SecurityIdentifier));
+        if (rules == null) return false;
+
+        var identify = WindowsIdentity.GetCurrent();
+        foreach (AuthorizationRule rule in rules)
+        {
+            if (!(rule is FileSystemAccessRule fsAccessRule)) continue;
+            if (identify.Groups.Contains(rule.IdentityReference))
+            {
+                if (fsAccessRule.FileSystemRights.HasFlag(FileSystemRights.Read))
+                {
+                    if (fsAccessRule.AccessControlType == AccessControlType.Deny) return false;
+                    canAccess = true;
+                }
+            }
+        }
+        return canAccess;
+    }
 }
